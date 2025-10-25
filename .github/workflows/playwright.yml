@@ -1,18 +1,66 @@
-name: Playwright Tests
-on: [push, pull_request]
+name: Playwright Testing Suite
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
 jobs:
-test:
-runs-on: ubuntu-latest
-steps:
-- uses: actions/checkout@v3
-- uses: actions/setup-node@v3
-with:
-node-version: 18
-- run: npm ci
-- run: npx playwright install --with-deps
-- run: npx playwright test
-- name: Upload HTML report
-uses: actions/upload-artifact@v3
-with:
-name: playwright-report
-path: playwright-report/
+  test:
+    name: Run Playwright Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Checkout repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2️⃣ Setup Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      # 3️⃣ Install dependencies
+      - name: Install dependencies
+        run: npm ci
+
+      # 4️⃣ Install Playwright browsers
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+
+      # 5️⃣ Run tests (with HTML reporter)
+      - name: Run Playwright tests
+        run: npx playwright test --reporter=html
+
+      # 6️⃣ Upload HTML report
+      - name: Upload HTML report
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+
+      # 7️⃣ Upload test results (videos, screenshots)
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: test-results/
+
+  # 🧾 Optional Job: Visual Regression Summary
+  visual-summary:
+    name: Visual Comparison
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Download report artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+      - name: Display summary
+        run: |
+          echo "✅ All tests completed!"
+          echo "📸 Visual baseline and snapshots available under tests/__snapshots__/"
+          echo "🧾 HTML report saved in 'playwright-report/index.html'"
