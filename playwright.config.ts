@@ -5,30 +5,29 @@ export default defineConfig({
   testDir: './tests',
 
   // ⏱️ Timeout settings
-  timeout: 60000, // increased global timeout to 60s for slow browsers like Firefox
+  timeout: 60000, // increased global timeout to 60s for stability
 
   // 🧾 Enable HTML reporter
   reporter: [['html', { open: 'never' }]],
 
-  // ⚙️ Default test behavior
+  // ⚙️ Default test behavior optimized for demo
   use: {
-    headless: false, // visible browser for demo
-    actionTimeout: 15000, // limit for each user action
-    navigationTimeout: 30000, // limit for page.goto
-    screenshot: 'only-on-failure', // capture screenshots when a test fails
-    video: 'retain-on-failure', // record video on failure for debugging
+    headless: false,         // visible browser for presentation
+    slowMo: 800,             // 👈 adds 0.8s delay between actions for clarity
+    actionTimeout: 15000,    // limit for each user action
+    navigationTimeout: 30000,// limit for page.goto
+    screenshot: 'only-on-failure',
+    video: 'on',             // always record video (great for backup demo)
   },
 
-  // 🌐 Multi-browser projects
+  // 🌐 Run only one browser during demo (Chromium)
   projects: [
     { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
-    { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
-    { name: 'webkit', use: { ...devices['Desktop Safari'] } },
   ],
 
-  // 🧰 Optional: customize test retries & workers
+  // 🧰 Optional: customize retries & workers
   retries: 0,
-  workers: 4,
+  workers: 2,
 
   // 🗂 Output folders for reports & traces
   outputDir: 'test-results/',
